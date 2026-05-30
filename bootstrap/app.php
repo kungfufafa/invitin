@@ -27,4 +27,21 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, \Throwable $exception, Request $request) {
+            $statusCode = $response->getStatusCode();
+            
+            // Tetap tampilkan stack trace bawaan Laravel (Ignition) jika terjadi error 500 di environment local
+            if (app()->environment(['local', 'testing']) && $statusCode === 500) {
+                return $response;
+            }
+
+            if (in_array($statusCode, [500, 503, 404, 403])) {
+                return \Inertia\Inertia::render('Error', ['status' => $statusCode])
+                    ->toResponse($request)
+                    ->setStatusCode($statusCode);
+            }
+
+            return $response;
+        });
     })->create();
