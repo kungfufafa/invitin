@@ -1,9 +1,12 @@
 import { useForm, usePage } from '@inertiajs/react';
 import WorkspaceLayout from '@/layouts/workspace-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Check } from 'lucide-react';
+import { CalendarDays, Check, Save, UserRound } from 'lucide-react';
+import type { FormEvent } from 'react';
+
+const inputClassName =
+    'h-11 w-full border border-[#1E1E1E]/15 bg-white px-3 text-sm outline-none transition-colors placeholder:text-[#4A4A4A]/50 focus:border-[#8B9B3F]';
+
+const labelClassName = 'block text-sm font-medium text-[#1E1E1E]';
 
 export default function WorkspaceContent({ invitation }: { invitation: any }) {
     const { flash } = usePage<any>().props;
@@ -13,17 +16,17 @@ export default function WorkspaceContent({ invitation }: { invitation: any }) {
         basic: { title: '', main_date: '' },
         couple: [
             { role: 'groom', full_name: '', nickname: '' },
-            { role: 'bride', full_name: '', nickname: '' }
-        ]
+            { role: 'bride', full_name: '', nickname: '' },
+        ],
     };
 
     const initialData = invitation.data_json || defaultData;
 
     const { data, setData, put, processing, errors } = useForm({
-        data_json: initialData
+        data_json: initialData,
     });
 
-    const handleUpdate = (e: React.FormEvent) => {
+    const handleUpdate = (e: FormEvent) => {
         e.preventDefault();
         put(`/workspace/${invitation.id}/content`);
     };
@@ -31,102 +34,196 @@ export default function WorkspaceContent({ invitation }: { invitation: any }) {
     return (
         <WorkspaceLayout invitation={invitation} title="Konten Undangan">
             {flash?.success && (
-                <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-lg flex items-center gap-2 border border-emerald-200">
-                    <Check className="w-5 h-5" />
-                    <p className="font-medium text-sm">{flash.success}</p>
+                <div className="mb-6 flex items-center gap-2 border border-[#8B9B3F]/25 bg-[#E2E6D9] p-4 text-[#1E1E1E]">
+                    <Check className="size-5 text-[#8B9B3F]" />
+                    <p className="text-sm font-medium">{flash.success}</p>
                 </div>
             )}
 
             <form onSubmit={handleUpdate} className="space-y-8">
                 {/* Basic Info */}
-                <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
-                    <div className="p-6 border-b border-neutral-100">
-                        <h2 className="text-lg font-semibold text-neutral-900">Informasi Acara Utama</h2>
+                <div className="border border-[#1E1E1E]/10 bg-[#FDFBF7]">
+                    <div className="border-b border-[#1E1E1E]/10 p-6">
+                        <p className="mb-2 flex items-center gap-2 text-xs font-medium tracking-wide text-[#8B9B3F] uppercase">
+                            <CalendarDays className="size-4" />
+                            Step 01
+                        </p>
+                        <h2 className="font-serif text-3xl text-[#1E1E1E] italic">
+                            Informasi Acara Utama
+                        </h2>
+                        <p className="mt-2 text-sm text-[#4A4A4A]">
+                            Data utama ini menjadi headline dan tanggal inti
+                            undangan.
+                        </p>
                     </div>
-                    <div className="p-6 space-y-6">
+                    <div className="grid gap-6 p-6 md:grid-cols-2">
                         <div className="space-y-2">
-                            <Label htmlFor="basic_title">Teks Judul (Hero)</Label>
-                            <Input 
-                                id="basic_title" 
-                                value={data.data_json.basic?.title || ''} 
-                                onChange={e => setData('data_json', {
-                                    ...data.data_json,
-                                    basic: { ...data.data_json.basic, title: e.target.value }
-                                })} 
-                                placeholder="Contoh: The Wedding of Radit & Nabila" 
+                            <label
+                                htmlFor="basic_title"
+                                className={labelClassName}
+                            >
+                                Teks Judul (Hero)
+                            </label>
+                            <input
+                                id="basic_title"
+                                value={data.data_json.basic?.title || ''}
+                                onChange={(e) =>
+                                    setData('data_json', {
+                                        ...data.data_json,
+                                        basic: {
+                                            ...data.data_json.basic,
+                                            title: e.target.value,
+                                        },
+                                    })
+                                }
+                                placeholder="Contoh: The Wedding of Radit & Nabila"
+                                className={inputClassName}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="basic_date">Tanggal Utama Acara</Label>
-                            <Input 
-                                id="basic_date" 
+                            <label
+                                htmlFor="basic_date"
+                                className={labelClassName}
+                            >
+                                Tanggal Utama Acara
+                            </label>
+                            <input
+                                id="basic_date"
                                 type="date"
-                                value={data.data_json.basic?.main_date || ''} 
-                                onChange={e => setData('data_json', {
-                                    ...data.data_json,
-                                    basic: { ...data.data_json.basic, main_date: e.target.value }
-                                })} 
+                                value={data.data_json.basic?.main_date || ''}
+                                onChange={(e) =>
+                                    setData('data_json', {
+                                        ...data.data_json,
+                                        basic: {
+                                            ...data.data_json.basic,
+                                            main_date: e.target.value,
+                                        },
+                                    })
+                                }
+                                className={inputClassName}
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Couple Info */}
-                <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
-                    <div className="p-6 border-b border-neutral-100">
-                        <h2 className="text-lg font-semibold text-neutral-900">Data Mempelai</h2>
+                <div className="border border-[#1E1E1E]/10 bg-[#FDFBF7]">
+                    <div className="border-b border-[#1E1E1E]/10 p-6">
+                        <p className="mb-2 flex items-center gap-2 text-xs font-medium tracking-wide text-[#8B9B3F] uppercase">
+                            <UserRound className="size-4" />
+                            Step 02
+                        </p>
+                        <h2 className="font-serif text-3xl text-[#1E1E1E] italic">
+                            Data Mempelai
+                        </h2>
+                        <p className="mt-2 text-sm text-[#4A4A4A]">
+                            Nama lengkap dan nama panggilan akan dipakai di
+                            cover undangan.
+                        </p>
                     </div>
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 gap-8 p-6 md:grid-cols-2">
                         {/* Groom */}
-                        <div className="space-y-4 border-r border-neutral-100 pr-4">
-                            <h3 className="font-medium text-neutral-800">Mempelai Pria</h3>
+                        <div className="space-y-4 md:border-r md:border-[#1E1E1E]/10 md:pr-8">
+                            <h3 className="font-serif text-2xl text-[#1E1E1E] italic">
+                                Mempelai Pria
+                            </h3>
                             <div className="space-y-2">
-                                <Label>Nama Lengkap</Label>
-                                <Input 
-                                    value={data.data_json.couple?.[0]?.full_name || ''} 
-                                    onChange={e => {
-                                        const newCouple = [...(data.data_json.couple || defaultData.couple)];
+                                <label className={labelClassName}>
+                                    Nama Lengkap
+                                </label>
+                                <input
+                                    value={
+                                        data.data_json.couple?.[0]?.full_name ||
+                                        ''
+                                    }
+                                    onChange={(e) => {
+                                        const newCouple = [
+                                            ...(data.data_json.couple ||
+                                                defaultData.couple),
+                                        ];
                                         newCouple[0].full_name = e.target.value;
-                                        setData('data_json', { ...data.data_json, couple: newCouple });
-                                    }} 
+                                        setData('data_json', {
+                                            ...data.data_json,
+                                            couple: newCouple,
+                                        });
+                                    }}
+                                    className={inputClassName}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Nama Panggilan</Label>
-                                <Input 
-                                    value={data.data_json.couple?.[0]?.nickname || ''} 
-                                    onChange={e => {
-                                        const newCouple = [...(data.data_json.couple || defaultData.couple)];
+                                <label className={labelClassName}>
+                                    Nama Panggilan
+                                </label>
+                                <input
+                                    value={
+                                        data.data_json.couple?.[0]?.nickname ||
+                                        ''
+                                    }
+                                    onChange={(e) => {
+                                        const newCouple = [
+                                            ...(data.data_json.couple ||
+                                                defaultData.couple),
+                                        ];
                                         newCouple[0].nickname = e.target.value;
-                                        setData('data_json', { ...data.data_json, couple: newCouple });
-                                    }} 
+                                        setData('data_json', {
+                                            ...data.data_json,
+                                            couple: newCouple,
+                                        });
+                                    }}
+                                    className={inputClassName}
                                 />
                             </div>
                         </div>
 
                         {/* Bride */}
                         <div className="space-y-4">
-                            <h3 className="font-medium text-neutral-800">Mempelai Wanita</h3>
+                            <h3 className="font-serif text-2xl text-[#1E1E1E] italic">
+                                Mempelai Wanita
+                            </h3>
                             <div className="space-y-2">
-                                <Label>Nama Lengkap</Label>
-                                <Input 
-                                    value={data.data_json.couple?.[1]?.full_name || ''} 
-                                    onChange={e => {
-                                        const newCouple = [...(data.data_json.couple || defaultData.couple)];
+                                <label className={labelClassName}>
+                                    Nama Lengkap
+                                </label>
+                                <input
+                                    value={
+                                        data.data_json.couple?.[1]?.full_name ||
+                                        ''
+                                    }
+                                    onChange={(e) => {
+                                        const newCouple = [
+                                            ...(data.data_json.couple ||
+                                                defaultData.couple),
+                                        ];
                                         newCouple[1].full_name = e.target.value;
-                                        setData('data_json', { ...data.data_json, couple: newCouple });
-                                    }} 
+                                        setData('data_json', {
+                                            ...data.data_json,
+                                            couple: newCouple,
+                                        });
+                                    }}
+                                    className={inputClassName}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Nama Panggilan</Label>
-                                <Input 
-                                    value={data.data_json.couple?.[1]?.nickname || ''} 
-                                    onChange={e => {
-                                        const newCouple = [...(data.data_json.couple || defaultData.couple)];
+                                <label className={labelClassName}>
+                                    Nama Panggilan
+                                </label>
+                                <input
+                                    value={
+                                        data.data_json.couple?.[1]?.nickname ||
+                                        ''
+                                    }
+                                    onChange={(e) => {
+                                        const newCouple = [
+                                            ...(data.data_json.couple ||
+                                                defaultData.couple),
+                                        ];
                                         newCouple[1].nickname = e.target.value;
-                                        setData('data_json', { ...data.data_json, couple: newCouple });
-                                    }} 
+                                        setData('data_json', {
+                                            ...data.data_json,
+                                            couple: newCouple,
+                                        });
+                                    }}
+                                    className={inputClassName}
                                 />
                             </div>
                         </div>
@@ -134,9 +231,14 @@ export default function WorkspaceContent({ invitation }: { invitation: any }) {
                 </div>
 
                 <div className="flex justify-end pt-2 pb-10">
-                    <Button type="submit" size="lg" disabled={processing}>
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="inline-flex items-center justify-center gap-2 bg-[#1C1C1C] px-6 py-4 text-sm font-medium tracking-wide text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <Save className="size-4" />
                         Simpan Semua Konten
-                    </Button>
+                    </button>
                 </div>
             </form>
         </WorkspaceLayout>

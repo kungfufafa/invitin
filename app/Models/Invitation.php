@@ -15,6 +15,8 @@ class Invitation extends Model
         'user_id',
         'theme_id',
         'transaction_id',
+        'title',
+        'slug',
         'status',
         'custom_domain',
         'data_json',

@@ -1,97 +1,167 @@
 import { type PropsWithChildren } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, Settings, Type, Users, MessageSquareHeart, Globe, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+    CheckCircle2,
+    Globe,
+    LayoutDashboard,
+    MessageSquareHeart,
+    Settings,
+    Type,
+    Users,
+} from 'lucide-react';
 
-export default function WorkspaceLayout({ children, invitation, title }: PropsWithChildren<{ invitation: any, title?: string }>) {
+export default function WorkspaceLayout({
+    children,
+    invitation,
+    title,
+}: PropsWithChildren<{ invitation: any; title?: string }>) {
     const { url } = usePage();
     const basePath = `/workspace/${invitation.id}`;
+    const invitationTitle = invitation.title || 'Workspace Undangan';
+    const publicUrl = invitation.slug ? `/u/${invitation.slug}` : '#';
 
     const navigation = [
         { name: 'Pengaturan', href: `${basePath}/settings`, icon: Settings },
         { name: 'Konten', href: `${basePath}/content`, icon: Type },
         { name: 'Tamu', href: `${basePath}/guests`, icon: Users },
-        { name: 'Ucapan & RSVP', href: `${basePath}/wishes`, icon: MessageSquareHeart },
+        {
+            name: 'Ucapan & RSVP',
+            href: `${basePath}/wishes`,
+            icon: MessageSquareHeart,
+        },
     ];
 
     return (
-        <div className="min-h-screen bg-neutral-50 flex">
+        <div className="min-h-screen bg-[#F6F4EF] font-sans text-[#1E1E1E]">
             {title && <Head title={`${title} - Workspace`} />}
-            
+
             {/* Sidebar */}
-            <div className="w-64 bg-white border-r border-neutral-200 flex flex-col fixed inset-y-0 z-10">
-                <div className="h-16 flex items-center px-6 border-b border-neutral-200">
-                    <Link href="/dashboard" className="flex items-center gap-2 text-neutral-600 hover:text-black transition-colors font-medium">
-                        <LayoutDashboard className="w-5 h-5" />
-                        <span>Kembali ke Dashboard</span>
+            <aside className="fixed inset-y-0 left-0 z-20 hidden w-72 flex-col border-r border-[#1E1E1E]/10 bg-[#FDFBF7] lg:flex">
+                <div className="border-b border-[#1E1E1E]/10 p-6">
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-[#4A4A4A] transition-colors hover:text-[#1E1E1E]"
+                    >
+                        <LayoutDashboard className="size-4" />
+                        Kembali ke Dashboard
                     </Link>
                 </div>
-                
-                <div className="p-6 border-b border-neutral-100">
-                    <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-2">Workspace</h2>
-                    <p className="font-medium text-neutral-900 truncate" title={invitation.title}>{invitation.title}</p>
-                    <div className="mt-2 flex items-center gap-1.5 text-xs text-neutral-500">
+
+                <div className="border-b border-[#1E1E1E]/10 p-6">
+                    <p className="mb-3 text-xs font-medium tracking-wide text-[#8B9B3F] uppercase">
+                        Workspace Invitin
+                    </p>
+                    <h2
+                        className="truncate font-serif text-3xl italic"
+                        title={invitationTitle}
+                    >
+                        {invitationTitle}
+                    </h2>
+                    <div className="mt-4 flex items-center gap-1.5 text-xs">
                         {invitation.status === 'published' ? (
-                            <span className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                                <Globe className="w-3 h-3" /> Dipublikasikan
+                            <span className="flex items-center gap-1.5 border border-[#8B9B3F]/25 bg-[#E2E6D9] px-3 py-1 font-medium text-[#1E1E1E]">
+                                <Globe className="size-3.5 text-[#8B9B3F]" />
+                                Dipublikasikan
                             </span>
                         ) : (
-                            <span className="flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                            <span className="flex items-center gap-1.5 border border-[#1E1E1E]/10 bg-[#F6F4EF] px-3 py-1 font-medium text-[#4A4A4A]">
+                                <CheckCircle2 className="size-3.5 text-[#8B9B3F]" />
                                 Draft
                             </span>
                         )}
                     </div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                <nav className="flex-1 space-y-2 overflow-y-auto p-4">
                     {navigation.map((item) => {
                         const isActive = url.startsWith(item.href);
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                                    isActive 
-                                        ? 'bg-neutral-900 text-white' 
-                                        : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                                className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
+                                    isActive
+                                        ? 'bg-[#1C1C1C] text-white'
+                                        : 'text-[#4A4A4A] hover:bg-[#E2E6D9] hover:text-[#1E1E1E]'
                                 }`}
                             >
-                                <item.icon className="w-5 h-5" />
+                                <item.icon className="size-5" />
                                 {item.name}
                             </Link>
                         );
                     })}
                 </nav>
-            </div>
+            </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 ml-64 flex flex-col min-h-screen">
+            <div className="flex min-h-screen flex-col lg:pl-72">
                 {/* Topbar */}
-                <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-8 sticky top-0 z-10">
-                    <h1 className="text-lg font-semibold text-neutral-900">{title}</h1>
-                    
-                    <div className="flex items-center gap-4">
+                <header className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-4 border-b border-[#1E1E1E]/10 bg-[#FDFBF7]/95 px-4 py-3 backdrop-blur md:px-8">
+                    <div>
+                        <Link
+                            href="/dashboard"
+                            className="mb-1 inline-flex items-center gap-2 text-xs font-medium text-[#4A4A4A] lg:hidden"
+                        >
+                            <LayoutDashboard className="size-3.5" />
+                            Dashboard
+                        </Link>
+                        <h1 className="text-base font-semibold text-[#1E1E1E] md:text-lg">
+                            {title}
+                        </h1>
+                    </div>
+
+                    <div className="flex items-center gap-3">
                         {invitation.status === 'published' ? (
-                            <a href={`/u/${invitation.slug}`} target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" className="gap-2">
-                                    <Globe className="w-4 h-4" /> Buka Undangan
-                                </Button>
+                            <a
+                                href={publicUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 border border-[#1C1C1C]/20 bg-transparent px-4 py-2 text-sm font-medium text-[#1C1C1C] transition-colors hover:bg-white"
+                            >
+                                <Globe className="size-4" />
+                                <span className="hidden sm:inline">
+                                    Buka Undangan
+                                </span>
                             </a>
                         ) : (
-                            <a href={`/u/${invitation.slug}`} target="_blank" rel="noopener noreferrer">
-                                <Button variant="secondary" className="gap-2 text-neutral-600">
-                                    <Globe className="w-4 h-4" /> Preview Publik
-                                </Button>
+                            <a
+                                href={publicUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 bg-[#1C1C1C] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black"
+                            >
+                                <Globe className="size-4" />
+                                <span className="hidden sm:inline">
+                                    Preview Publik
+                                </span>
                             </a>
                         )}
                     </div>
                 </header>
 
+                <nav className="flex gap-2 overflow-x-auto border-b border-[#1E1E1E]/10 bg-[#F6F4EF] px-4 py-3 lg:hidden">
+                    {navigation.map((item) => {
+                        const isActive = url.startsWith(item.href);
+                        return (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={`inline-flex shrink-0 items-center gap-2 border px-4 py-2 text-sm font-medium ${
+                                    isActive
+                                        ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white'
+                                        : 'border-[#1E1E1E]/10 bg-[#FDFBF7] text-[#4A4A4A]'
+                                }`}
+                            >
+                                <item.icon className="size-4" />
+                                {item.name}
+                            </Link>
+                        );
+                    })}
+                </nav>
+
                 {/* Page Content */}
-                <main className="flex-1 p-8">
-                    <div className="max-w-4xl mx-auto">
-                        {children}
-                    </div>
+                <main className="flex-1 px-4 py-6 md:px-8 md:py-10">
+                    <div className="mx-auto max-w-5xl">{children}</div>
                 </main>
             </div>
         </div>

@@ -1,27 +1,51 @@
 import { Head, Link } from '@inertiajs/react';
+import { ArrowRight, CheckCircle2, LayoutDashboard } from 'lucide-react';
+import { index as themesIndex } from '@/routes/themes';
 
 export default function Success({ invitation }: { invitation: any }) {
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 py-12 flex items-center">
-            <Head title="Payment Successful" />
-            <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
-                <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-800 p-8 sm:p-12">
-                    <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Payment Successful!</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mb-8">
-                        Thank you for purchasing <strong>{invitation.theme.name}</strong>. 
-                        Your digital invitation workspace has been created successfully.
-                    </p>
-                    
-                    <Link 
-                        href="/app" 
-                        className="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-colors"
+        <div className="flex min-h-screen items-center bg-[#F6F4EF] px-4 py-12 font-sans text-[#1E1E1E] selection:bg-[#1E1E1E] selection:text-white">
+            <Head title="Checkout Berhasil | Invitin by Mekaya" />
+
+            <div className="mx-auto w-full max-w-2xl border border-[#1E1E1E]/10 bg-[#FDFBF7] p-6 text-center md:p-12">
+                <div className="mx-auto mb-8 flex size-20 items-center justify-center rounded-full bg-[#E2E6D9] text-[#8B9B3F]">
+                    <CheckCircle2 className="size-10" />
+                </div>
+
+                <p className="mb-4 text-sm font-medium tracking-wide text-[#8B9B3F] uppercase">
+                    Workspace berhasil dibuat
+                </p>
+                <h1 className="font-serif text-5xl leading-tight md:text-6xl">
+                    Undanganmu siap diisi
+                </h1>
+                <p className="mx-auto mt-6 max-w-lg text-[15px] leading-relaxed text-[#4A4A4A]">
+                    Terima kasih sudah memilih{' '}
+                    <strong>{invitation.theme.name}</strong>. Sekarang kamu bisa
+                    masuk ke workspace customer untuk mengatur konten, preview,
+                    dan publish. Kalau butuh undangan lain, kamu bisa beli tema
+                    lagi kapan saja dari katalog.
+                </p>
+
+                <div className="mt-10 grid gap-3 sm:grid-cols-3">
+                    <Link
+                        href="/app"
+                        className="inline-flex items-center justify-center gap-2 bg-[#1C1C1C] px-6 py-4 text-sm font-medium tracking-wide text-white transition-colors hover:bg-black"
                     >
-                        Go to My Dashboard
+                        <LayoutDashboard className="size-4" />
+                        Buka Dashboard
+                    </Link>
+                    <Link
+                        href={`/workspace/${invitation.id}`}
+                        className="inline-flex items-center justify-center gap-2 border border-[#1C1C1C]/20 px-6 py-4 text-sm font-medium tracking-wide text-[#1C1C1C] transition-colors hover:bg-white"
+                    >
+                        Masuk Workspace
+                        <ArrowRight className="size-4" />
+                    </Link>
+                    <Link
+                        href={themesIndex.url()}
+                        className="inline-flex items-center justify-center gap-2 border border-[#1C1C1C]/20 px-6 py-4 text-sm font-medium tracking-wide text-[#1C1C1C] transition-colors hover:bg-white"
+                    >
+                        Beli Lagi
                     </Link>
                 </div>
             </div>

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\Theme;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -50,6 +51,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
+            'orderIntent' => $this->checkoutIntent($request),
             'status' => $request->session()->get('status'),
         ]));
 
@@ -67,7 +69,8 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/register', [
+        Fortify::registerView(fn (Request $request) => Inertia::render('auth/register', [
+            'orderIntent' => $this->checkoutIntent($request),
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]));
 
@@ -96,5 +99,38 @@ class FortifyServiceProvider extends ServiceProvider
                 ($request->input('credential.id') ?: $request->session()->getId()).'|'.$request->ip(),
             );
         });
+    }
+
+    /**
+     * @return array{name: string, price: int, checkout_url: string}|null
+     */
+    private function checkoutIntent(Request $request): ?array
+    {
+        $intendedUrl = $request->session()->get('url.intended');
+
+        if (! is_string($intendedUrl)) {
+            return null;
+        }
+
+        $path = parse_url($intendedUrl, PHP_URL_PATH);
+
+        if (! is_string($path) || ! preg_match('#^/checkout/([^/]+)$#', $path, $matches)) {
+            return null;
+        }
+
+        $theme = Theme::query()
+            ->where('slug', $matches[1])
+            ->where('status', 'active')
+            ->first();
+
+        if (! $theme) {
+            return null;
+        }
+
+        return [
+            'name' => $theme->name,
+            'price' => $theme->price,
+            'checkout_url' => route('checkout.create', $theme->slug, false),
+        ];
     }
 }

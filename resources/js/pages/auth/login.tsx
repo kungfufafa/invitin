@@ -1,26 +1,52 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
-import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import WelcomePasswordInput from '@/components/welcome-password-input';
+import { CreditCard, LoaderCircle } from 'lucide-react';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
+type OrderIntent = {
+    name: string;
+    price: number;
+    checkout_url: string;
+};
+
 type Props = {
     status?: string;
     canResetPassword: boolean;
+    orderIntent?: OrderIntent | null;
 };
 
-export default function Login({ status, canResetPassword }: Props) {
+const inputClassName =
+    'h-11 w-full border border-[#1E1E1E]/15 bg-white px-3 text-sm text-[#1E1E1E] transition-colors outline-none placeholder:text-[#4A4A4A]/50 focus:border-[#8B9B3F]';
+
+const labelClassName = 'block text-sm font-medium text-[#1E1E1E]';
+
+export default function Login({
+    status,
+    canResetPassword,
+    orderIntent,
+}: Props) {
     return (
         <>
             <Head title="Log in" />
+
+            {orderIntent && (
+                <div className="border border-[#8B9B3F]/25 bg-[#E2E6D9] p-4 text-sm text-[#1E1E1E]">
+                    <p className="mb-2 flex items-center gap-2 font-medium">
+                        <CreditCard className="size-4 text-[#8B9B3F]" />
+                        Lanjutkan order {orderIntent.name}
+                    </p>
+                    <p className="text-[#4A4A4A]">
+                        Masuk dulu, lalu kamu langsung kembali ke checkout.
+                        Total tema: Rp{' '}
+                        {orderIntent.price.toLocaleString('id-ID')}.
+                    </p>
+                </div>
+            )}
 
             <PasskeyVerify />
 
@@ -33,8 +59,13 @@ export default function Login({ status, canResetPassword }: Props) {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
+                                <label
+                                    htmlFor="email"
+                                    className={labelClassName}
+                                >
+                                    Email
+                                </label>
+                                <input
                                     id="email"
                                     type="email"
                                     name="email"
@@ -43,24 +74,30 @@ export default function Login({ status, canResetPassword }: Props) {
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    className={inputClassName}
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <label
+                                        htmlFor="password"
+                                        className={labelClassName}
+                                    >
+                                        Password
+                                    </label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-sm text-[#4A4A4A] hover:text-[#1E1E1E]"
                                             tabIndex={5}
                                         >
-                                            Forgot your password?
+                                            Lupa password?
                                         </TextLink>
                                     )}
                                 </div>
-                                <PasswordInput
+                                <WelcomePasswordInput
                                     id="password"
                                     name="password"
                                     required
@@ -72,30 +109,41 @@ export default function Login({ status, canResetPassword }: Props) {
                             </div>
 
                             <div className="flex items-center space-x-3">
-                                <Checkbox
+                                <input
                                     id="remember"
                                     name="remember"
+                                    type="checkbox"
                                     tabIndex={3}
+                                    className="size-4 border-[#1E1E1E]/20 accent-[#8B9B3F]"
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <label
+                                    htmlFor="remember"
+                                    className="text-sm text-[#4A4A4A]"
+                                >
+                                    Ingat saya
+                                </label>
                             </div>
 
-                            <Button
+                            <button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 inline-flex w-full items-center justify-center gap-2 bg-[#1C1C1C] px-6 py-4 text-sm font-medium tracking-wide text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
                             >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
+                                {processing && (
+                                    <LoaderCircle className="size-4 animate-spin" />
+                                )}
+                                {orderIntent
+                                    ? 'Masuk & Lanjut Checkout'
+                                    : 'Masuk'}
+                            </button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
-                            Don't have an account?{' '}
+                        <div className="text-center text-sm text-[#4A4A4A]">
+                            Belum punya akun?{' '}
                             <TextLink href={register()} tabIndex={5}>
-                                Sign up
+                                Daftar dan lanjut order
                             </TextLink>
                         </div>
                     </>
@@ -112,6 +160,6 @@ export default function Login({ status, canResetPassword }: Props) {
 }
 
 Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
+    title: 'Masuk ke Invitin',
+    description: 'Lanjut checkout tema atau kelola workspace undanganmu.',
 };

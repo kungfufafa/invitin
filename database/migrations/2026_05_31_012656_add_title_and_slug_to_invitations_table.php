@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('invitations', function (Blueprint $table) {
+            $table->string('title')->nullable()->after('transaction_id');
+            $table->string('slug')->nullable()->unique()->after('title');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('invitations', function (Blueprint $table) {
+            $table->dropUnique(['slug']);
+            $table->dropColumn(['title', 'slug']);
+        });
+    }
+};

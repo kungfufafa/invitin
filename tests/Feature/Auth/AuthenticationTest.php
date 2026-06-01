@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Theme;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
@@ -20,6 +21,22 @@ test('users can authenticate using the login screen', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('returning users continue to checkout after login from an order', function () {
+    $user = User::factory()->create();
+    $theme = Theme::factory()->create();
+    $this->withSession([
+        'url.intended' => route('checkout.create', $theme->slug, false),
+    ]);
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('checkout.create', $theme->slug, false));
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
